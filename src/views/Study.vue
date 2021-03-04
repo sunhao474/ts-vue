@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>{{ title }}</div>
+    <div @click="changeDrag">333322211</div>
     <div>
       <span>inputValue:</span>
       <input v-model="inputValue" />
@@ -13,14 +13,19 @@
 
     <List :list="list"/>
     <div id='container' style="height: 500px; width: 500px">
-
+      <IotaAMap
+        :dragEnable="dragEnable"
+        invalid-one="123"
+        invalid-two="1231"
+        map-key="9c581cda99009010a4212703098afe19"
+      />
     </div>
   </div>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import List from '../components/List.vue'
-import AMapLoader from '../../lib/main/index'
+import IotaAMap from '../../mapLib/components/IotaAMap.vue';
 
 interface ArrayListItem {
   id: number;
@@ -29,7 +34,7 @@ interface ArrayListItem {
 }
 
 @Component({
-  components: { List }
+  components: { List, IotaAMap }
 })
 export default class Study extends Vue {
   //#region data
@@ -37,6 +42,7 @@ export default class Study extends Vue {
   private inputValue2: string;
   private map: any;
   private list: Array<ArrayListItem>;
+  private dragEnable = false;
   //#endregion
 
   //#region prop
@@ -56,18 +62,18 @@ export default class Study extends Vue {
     ]
   }
 
-  //#region life Circle
-  public created(): void {
-    console.log('created')
+  public changeDrag(): void {
+    this.dragEnable = !this.dragEnable;
   }
 
+  //#region life Circle
+
   public mounted(): void {
-    console.log('mounted');
-    AMapLoader.load({
-      key: '9c581cda99009010a4212703098afe19',
-    }).then((AMap) => {
-      this.map = new AMap.Map('container')
-    })
+    // AMapLoader.load({
+    //   key: '9c581cda99009010a4212703098afe19',
+    // }).then((AMap) => {
+    //   this.map = new AMap.Map('container')
+    // })
   }
   //#endregion
 
