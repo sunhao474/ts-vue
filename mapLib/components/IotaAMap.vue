@@ -1,6 +1,7 @@
 <template>
   <div class="map-container">
     <div id="map" class="map-container" ref="mapContainer"></div>
+    <slot></slot>
   </div>
 </template>
 <script lang="ts">
@@ -8,17 +9,16 @@ import { Component, Prop } from 'vue-property-decorator';
 import MapComponent from '../utils/MapComponent';
 import AMapLoader from '../../lib/main/index';
 import { EVENTS } from '../config/constant';
-import defaultPropTable from './propTable/AMap';
-import "@amap/amap-jsapi-types";
+import defaultOptions from './defaultOptions/IotaAMap';
 
 @Component({
   name: 'i-amap'
 })
 export default class IotaAMap extends MapComponent {
-  @Prop() private dragEnable?: boolean;
-  @Prop() private invalidOne?: string;
-  @Prop() private invalidTwo?: string;
   @Prop() private mapKey!: string;
+  @Prop() private options?: AMap.MapOptions;
+  // @Prop() private events?: Array<AMap.Event>;
+  protected defaltOptions: Array<string> = defaultOptions;
 
   protected self: any;
   public mounted(): void {
@@ -36,15 +36,14 @@ export default class IotaAMap extends MapComponent {
       'zoomEnable',
       'rotateEnable'
       ];
-    const watchStatusProps = Object.keys(propsData).filter(item => {
+    const options = (propsData as any).options;
+    if (!options) return;
+    const watchStatusProps = Object.keys(options).filter(item => {
       return statusProp.indexOf(item) > -1;
     })
 
-    // for (const i in watchStatusProps) {
-    //   console.log(i);
-    // }
     watchStatusProps.forEach(item => {
-      const watchHandlers = this.$watch(item, newVal => {
+      const watchHandlers = this.$watch(`options.${item}`, newVal => {
         this.self.setStatus({ [item]: newVal })
       })
 
@@ -68,9 +67,7 @@ export default class IotaAMap extends MapComponent {
     const el = this.$refs.mapContainer;
     if (!el) return;
     const id = (el as any).id;
-    console.log(this.$options.propsData);
-    console.log(this.filterInitProps(defaultPropTable));
-    this.self = new AMap.Map(id, this.filterInitProps(defaultPropTable));
+    this.self = new AMap.Map(id, this.options);
     this.regist();
     this.$emit(EVENTS.READY, this.self);
     this.$children.forEach(component => {

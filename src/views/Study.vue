@@ -1,6 +1,10 @@
 <template>
   <div>
-    <div @click="changeDrag">333322211</div>
+    <div>
+      <button @click="changeZoomEnable">changeZoomEnable</button>
+      <button @click="changeDrag">changeDragEable</button>
+      <button @click="changeMarkers">changeMarkerOptions</button>
+    </div>
     <div>
       <span>inputValue:</span>
       <input v-model="inputValue" />
@@ -14,11 +18,15 @@
     <List :list="list"/>
     <div id='container' style="height: 500px; width: 500px">
       <IotaAMap
-        :dragEnable="dragEnable"
-        invalid-one="123"
-        invalid-two="1231"
         map-key="9c581cda99009010a4212703098afe19"
-      />
+        :options="options"
+        :events="events"
+      >
+        <IotaAMapMarker
+          :options="markerOptions"
+          :events="markerEvents"
+        />
+      </IotaAMap>
     </div>
   </div>
 </template>
@@ -26,6 +34,7 @@
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 import List from '../components/List.vue'
 import IotaAMap from '../../mapLib/components/IotaAMap.vue';
+import IotaAMapMarker from '../../mapLib/components/overlays/IotaAMapMarker.vue'
 
 interface ArrayListItem {
   id: number;
@@ -34,7 +43,7 @@ interface ArrayListItem {
 }
 
 @Component({
-  components: { List, IotaAMap }
+  components: { List, IotaAMap, IotaAMapMarker }
 })
 export default class Study extends Vue {
   //#region data
@@ -42,7 +51,34 @@ export default class Study extends Vue {
   private inputValue2: string;
   private map: any;
   private list: Array<ArrayListItem>;
-  private dragEnable = false;
+  // private dragEnable = false;
+  private options: AMap.MapOptions = {
+    zoomEnable: false,
+    dragEnable: false,
+  }
+
+  private markerOptions: AMap.MarkerOptions = {
+    cursor: 'ani',
+    draggable: false,
+  }
+
+  private markerEvents: any = {
+    'mouseover': () => {
+      console.log('marker mouseover')
+    },
+    'click': () => {
+      console.log('marker click')
+    }
+  }
+
+  private events: any = {
+    'complete': () => {
+      console.log('map complete');
+    },
+    'click': () => {
+      console.log('map click');
+    }
+  };
   //#endregion
 
   //#region prop
@@ -63,7 +99,15 @@ export default class Study extends Vue {
   }
 
   public changeDrag(): void {
-    this.dragEnable = !this.dragEnable;
+    this.options.dragEnable = !this.options.dragEnable;
+  }
+
+  public changeZoomEnable(): void {
+    this.options.zoomEnable = !this.options.zoomEnable;
+  }
+
+  public changeMarkers(): void {
+    this.markerOptions.draggable = !this.markerOptions.draggable;
   }
 
   //#region life Circle

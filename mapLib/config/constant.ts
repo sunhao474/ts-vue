@@ -1,4 +1,4 @@
-const enum EVENTS {
+enum EVENTS {
   READY = 'ready',
 }
 
